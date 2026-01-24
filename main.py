@@ -1,10 +1,15 @@
 import streamlit as st
 import sqlite3
 from datetime import date
+from pathlib import Path
+
+#DBパス定義
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / 'data' / 'app.db'
 
 #DB接続
 def get_db_connection():
-    conn = sqlite3.connect('data/app.db')
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
     return conn, cur
@@ -74,9 +79,143 @@ def set_page(page_name):
 def page_button(label, page_name):
     st.button(label, on_click=set_page, args=(page_name,))
 
+#日次ログの保存
+def insert_daily_log(daily_log: dict):
+    conn, cur = get_db_connection()
+    cur.execute("""
+        INSERT INTO daily_log
+            (date, discharge_log, discharge_talk, charge_log, charge_talk)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            daily_log['date'],
+            daily_log['discharge_log'],
+            daily_log['discharge_talk'],
+            daily_log['charge_log'],
+            daily_log['charge_talk']
+        )
+    )
+    conn.commit()
+    conn.close()
+
+#週次ログの保存
+def insert_weekly_log(weekly_log: dict):
+    conn, cur = get_db_connection()
+    cur.execute("""
+        INSERT INTO weekly_log
+            (date, start_date, end_date, discharge_notice, charge_notice)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            weekly_log['date'],
+            weekly_log['start_date'].isoformat(),
+            weekly_log['end_date'].isoformat(),
+            weekly_log['discharge_notice'],
+            weekly_log['charge_notice']
+        )
+    )
+    conn.commit()
+    conn.close()
+
+#日次ログの抽出（期間指定）
+def fetch_daily_logs(start_date, end_date):
+    conn, cur = get_db_connection()
+    cur.execute(
+        """
+        SELECT date, discharge_talk, charge_talk
+        FROM daily_log
+        WHERE date BETWEEN ? AND ?
+        ORDER BY date
+        """,
+        (start_date.isoformat(), end_date.isoformat())
+    )
+    daily_logs = cur.fetchall()
+    conn.close()
+    return daily_logs
+
+#日次ログの一覧取得
+def get_daily_logs():
+    conn, cur = get_db_connection()
+    cur.execute("SELECT * FROM daily_log ORDER BY date DESC")
+    daily_logs = cur.fetchall()
+    conn.close()
+    return daily_logs
+
+#日次ログの更新
+def update_daily_log(record_id, discharge_log, discharge_talk, charge_log, charge_talk):
+    conn, cur = get_db_connection()
+    cur.execute(
+        """
+        UPDATE daily_log
+        SET
+            discharge_log = ?,
+            discharge_talk = ?,
+            charge_log = ?,
+            charge_talk = ?
+        WHERE id = ?
+        """,
+        (
+            discharge_log,
+            discharge_talk,
+            charge_log,
+            charge_talk,
+            record_id
+        )
+    )
+    conn.commit()
+    conn.close()
+
+#日次ログの削除
+def delete_daily_log(record_id):
+    conn, cur = get_db_connection()
+    cur.execute(
+        "DELETE FROM daily_log WHERE id = ?",
+        (record_id,)
+    )
+    conn.commit()
+    conn.close()
+
+#週次ログの一覧取得
+def get_weekly_logs():
+    conn, cur = get_db_connection()
+    cur.execute("SELECT * FROM weekly_log ORDER BY date DESC")
+    weekly_logs = cur.fetchall()
+    conn.close()
+    return weekly_logs
+
+#週次ログの更新
+def update_weekly_log(record_id,discharge_notice,charge_notice):
+    conn, cur = get_db_connection()
+    cur.execute(
+        """
+        UPDATE weekly_log
+        SET
+            discharge_notice = ?,
+            charge_notice = ?
+        WHERE id = ?
+        """,
+        (
+            discharge_notice,
+            charge_notice,
+            record_id
+        )
+    )
+    conn.commit()
+    conn.close()
+
+#週次ログの削除
+def delete_weekly_log(record_id):
+    conn, cur = get_db_connection()
+    cur.execute(
+        "DELETE FROM weekly_log WHERE id = ?",
+        (record_id,)
+    )
+    conn.commit()
+    conn.close()
+
 #TOP画面
 def top_page():
-    st.title('書く瞑想 ~Writing Meditation')
+    st.title('書く瞑想 [Writing Meditation]')
     st.markdown("""
     日々の思考や感情を書き出し、  
     **週単位で振り返ること**を目的とした記録ツールです。
@@ -158,18 +297,7 @@ def weekly_page():
     if not start_date or not end_date:
         st.info("抽出期間を選択してください")
     else:
-        conn, cur = get_db_connection()
-        cur.execute(
-            """
-            SELECT date, discharge_talk, charge_talk
-            FROM daily_log
-            WHERE date BETWEEN ? AND ?
-            ORDER BY date
-            """,
-            (start_date.isoformat(), end_date.isoformat())
-        )
-        daily_logs = cur.fetchall()
-        conn.close()
+        daily_logs = fetch_daily_logs(start_date, end_date)
 
     st.markdown('＜対象期間の放電セルフトーク＞')
     for log in daily_logs:
@@ -202,7 +330,7 @@ def weekly_page():
 
     page_button('TOPに戻る', 'top')
 
-#日次ログ確認画面
+#日次ログ保存確認画面
 def daily_confirm_page():
     st.title('日次ログ内容確認')
 
@@ -215,30 +343,7 @@ def daily_confirm_page():
     st.write(daily_log['charge_talk'])
 
     def save_daily_log():
-        new_daily_log = {
-            'date':daily_log['date'],
-            'discharge_log':daily_log['discharge_log'],
-            'discharge_talk':daily_log['discharge_talk'],
-            'charge_log':daily_log['charge_log'],
-            'charge_talk':daily_log['charge_talk']
-        }
-
-        conn, cur = get_db_connection()
-        cur.execute("""
-            INSERT INTO daily_log
-                (date, discharge_log, discharge_talk, charge_log, charge_talk)
-            VALUES (?, ?, ?, ?, ?)
-            """,
-            (
-                new_daily_log['date'],
-                new_daily_log['discharge_log'],
-                new_daily_log['discharge_talk'],
-                new_daily_log['charge_log'],
-                new_daily_log['charge_talk']
-            )
-        )
-        conn.commit()
-        conn.close()
+        insert_daily_log(st.session_state.daily_log)
 
         st.session_state.daily_log = {
             'date': None,
@@ -252,7 +357,7 @@ def daily_confirm_page():
 
     page_button('修正する', 'daily')
 
-#週次ログ確認画面
+#週次ログ保存確認画面
 def weekly_confirm_page():
     st.title('週次ログ内容確認')
 
@@ -265,30 +370,7 @@ def weekly_confirm_page():
     st.write(weekly_log['charge_notice'])
 
     def save_weekly_log():
-        new_weekly_log = {
-            'date': weekly_log['date'],
-            'start_date': weekly_log['start_date'],
-            'end_date': weekly_log['end_date'],
-            'discharge_notice': weekly_log['discharge_notice'],
-            'charge_notice': weekly_log['charge_notice'],
-        }
-
-        conn, cur = get_db_connection()
-        cur.execute("""
-            INSERT INTO weekly_log
-                (date, start_date, end_date, discharge_notice, charge_notice)
-            VALUES (?, ?, ?, ?, ?)
-            """,
-            (
-                new_weekly_log['date'],
-                new_weekly_log['start_date'].isoformat(),
-                new_weekly_log['end_date'].isoformat(),
-                new_weekly_log['discharge_notice'],
-                new_weekly_log['charge_notice']
-            )
-        )
-        conn.commit()
-        conn.close()
+        insert_weekly_log(st.session_state.weekly_log)
 
         st.session_state.weekly_log = {
             'date': None,
@@ -306,10 +388,7 @@ def weekly_confirm_page():
 def weekly_list_page():
     st.title('🔍 週次ログを見返す')
 
-    conn, cur = get_db_connection()
-    cur.execute("SELECT * FROM weekly_log ORDER BY date DESC")
-    st.session_state.weekly_logs = cur.fetchall()
-    conn.close()
+    st.session_state.weekly_logs = get_weekly_logs()
 
     for log in st.session_state.weekly_logs:
         st.markdown(f"**作成日：{log['date']}（{log['start_date']} 〜 {log['end_date']}）**")
@@ -333,10 +412,7 @@ def weekly_list_page():
 def daily_edit_page():
     st.title('日次ログ修正・削除')
 
-    conn, cur = get_db_connection()
-    cur.execute("SELECT * FROM daily_log ORDER BY date DESC")
-    st.session_state.daily_logs = cur.fetchall()
-    conn.close()
+    st.session_state.daily_logs = get_daily_logs()
 
     dates = [log['date'] for log in st.session_state.daily_logs]
     selected_date = st.selectbox(
@@ -373,52 +449,51 @@ def daily_edit_page():
     charge_talk = st.text_area('充電セルフトーク',value=selected_log['charge_talk'])
     
     if st.button('上記の内容で上書きする'):
-        conn, cur = get_db_connection()
-        cur.execute(
-            """
-            UPDATE daily_log
-            SET
-                discharge_log = ?,
-                discharge_talk = ?,
-                charge_log = ?,
-                charge_talk = ?
-            WHERE id = ?
-            """,
-            (
-                discharge_log,
-                discharge_talk,
-                charge_log,
-                charge_talk,
-                selected_log['id']
-            )
-        )
-        conn.commit()
-        conn.close()
+        update_daily_log(
+            selected_log['id'],
+            discharge_log,
+            discharge_talk,
+            charge_log,
+            charge_talk
+            )   
         st.success('修正しました')
     
-    with st.expander('削除（元には戻せません）',expanded = st.session_state.delete_expander_open):
-        if st.button('本当に削除する'):
-            conn, cur = get_db_connection()
-            cur.execute(
-                "DELETE FROM daily_log WHERE id = ?",
-                (selected_log['id'],)
-            )
-            conn.commit()
-            conn.close()
-            st.success('削除しました')
-            st.session_state.delete_expander_open = False
-            st.rerun()
+    def go_delete_confirm():
+        st.session_state.delete_target_log = selected_log
+        st.session_state.page = 'daily_delete_confirm'
+
+    st.button('削除する', on_click=go_delete_confirm)
     
     page_button('TOPに戻る', 'top')
+
+#日次ログ削除確認画面
+def daily_delete_confirm_page():
+    st.title('日次ログ削除確認')
+
+    daily_log = st.session_state.delete_target_log
+
+    st.write(daily_log['date'])
+    st.write(daily_log['discharge_log'])
+    st.write(daily_log['discharge_talk'])
+    st.write(daily_log['charge_log'])
+    st.write(daily_log['charge_talk'])
+
+    def confirm_delete():
+        delete_daily_log(daily_log['id'])
+        st.success('削除しました')
+        st.session_state.page = 'top'
+        del st.session_state.delete_target_log
+
+    st.button('本当に削除する', on_click=confirm_delete)
+
+    page_button('キャンセル', 'daily_edit')
+
 
 #週次ログ修正・削除画面
 def weekly_edit_page():
     st.title('週次ログ修正・削除')
 
-    conn, cur = get_db_connection()
-    cur.execute("SELECT * FROM weekly_log ORDER BY date DESC")
-    st.session_state.weekly_logs = cur.fetchall()
-    conn.close()
+    st.session_state.weekly_logs = get_weekly_logs()
 
     dates = [log['date'] for log in st.session_state.weekly_logs]
     selected_date = st.selectbox(
@@ -453,39 +528,42 @@ def weekly_edit_page():
     charge_notice = st.text_area('充電の気づき',value=selected_log['charge_notice'])
     
     if st.button('上記の内容で上書きする'):
-        conn, cur = get_db_connection()
-        cur.execute(
-            """
-            UPDATE weekly_log
-            SET
-                discharge_notice = ?,
-                charge_notice = ?
-            WHERE id = ?
-            """,
-            (
-                discharge_notice,
-                charge_notice,
-                selected_log['id']
+        update_weekly_log(
+            selected_log['id'],
+            discharge_notice,
+            charge_notice
             )
-        )
-        conn.commit()
-        conn.close()
         st.success('修正しました')
     
-    with st.expander('削除（元には戻せません）',expanded = st.session_state.delete_expander_open):
-        if st.button('本当に削除する'):
-            conn, cur = get_db_connection()
-            cur.execute(
-                "DELETE FROM weekly_log WHERE id = ?",
-                (selected_log['id'],)
-            )
-            conn.commit()
-            conn.close()
-            st.success('削除しました')
-            st.session_state.delete_expander_open = False
-            st.rerun()
+    def go_delete_confirm():
+        st.session_state.delete_target_log = selected_log
+        st.session_state.page = 'weekly_delete_confirm'
+
+    st.button('削除する', on_click=go_delete_confirm)
     
     page_button('TOPに戻る', 'top')
+
+#週次ログ削除確認画面
+def weekly_delete_confirm_page():
+    st.title('週次ログ削除確認')
+
+    weekly_log = st.session_state.delete_target_log
+
+    st.write(weekly_log['date'])
+    st.write(weekly_log['start_date'])
+    st.write(weekly_log['end_date'])
+    st.write(weekly_log['discharge_notice'])    
+    st.write(weekly_log['charge_notice'])
+
+    def confirm_delete():
+        delete_weekly_log(weekly_log['id'])
+        st.success('削除しました')
+        st.session_state.page = 'top'
+        del st.session_state.delete_target_log
+
+    st.button('本当に削除する', on_click=confirm_delete)
+
+    page_button('キャンセル', 'weekly_edit')
 
 #画面切り替え処理
 if st.session_state.page == 'top':
@@ -502,5 +580,9 @@ elif st.session_state.page == 'weekly_list':
     weekly_list_page()
 elif st.session_state.page == 'daily_edit':
     daily_edit_page()
+elif st.session_state.page == 'daily_delete_confirm':
+    daily_delete_confirm_page()
 elif st.session_state.page == 'weekly_edit':
     weekly_edit_page()
+elif st.session_state.page == 'weekly_delete_confirm':
+    weekly_delete_confirm_page()
