@@ -35,6 +35,55 @@
 
 ---
 
+## データベース構成（SQLite）
+
+本アプリでは、日次の記録と週次の振り返りを分離して管理するため、
+以下の2テーブルで構成されています。
+
+- **daily_log**  
+  日々の放電・充電ログおよびセルフトークを記録  
+  - `date`
+  - `discharge_log`
+  - `discharge_talk`
+  - `charge_log`
+  - `charge_talk`
+
+- **weekly_log**  
+  一週間分のログを振り返り、気づきを記録  
+  - `date`
+  - `start_date`
+  - `end_date`
+  - `discharge_notice`
+  - `charge_notice`
+
+---
+
+## ディレクトリ構造
+
+```
+writing_meditation/
+├── data/
+│   └── app.db                # SQLite データベースファイル
+├── venv/                     # Python 仮想環境（Git 管理外）
+├── insert_dummy_daily.py     # ダミーデータ投入用スクリプト
+├── main.py                   # Streamlit アプリ本体
+└── README.md                 # 本ドキュメント
+```
+
+* **main.py**
+  Streamlit を用いたアプリケーションのエントリーポイントです。
+
+* **data/app.db**
+  日次ログ・週次ログを保存する SQLite データベースです。
+
+* **insert_dummy_daily.py**
+  開発・動作確認用にダミーデータを投入するためのスクリプトです。
+
+* **venv/**
+  Python の仮想環境フォルダです（リポジトリ管理対象外）。
+
+---
+
 ## 機能一覧
 
 ### 日次ログ機能
