@@ -1,4 +1,4 @@
-# Writing Meditation
+# 書く瞑想　~Writing Meditation~
 
 🔗 **WebアプリURL**
 [https://writing-meditation.streamlit.app](https://writing-meditation.streamlit.app)
