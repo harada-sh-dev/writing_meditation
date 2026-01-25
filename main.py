@@ -336,11 +336,11 @@ def daily_confirm_page():
 
     daily_log = st.session_state.daily_log
 
-    st.write(daily_log['date'])
-    st.write(daily_log['discharge_log'])
-    st.write(daily_log['discharge_talk'])
-    st.write(daily_log['charge_log'])
-    st.write(daily_log['charge_talk'])
+    st.write('作成日：',daily_log['date'])
+    st.write('放電ログ：',daily_log['discharge_log'])
+    st.write('放電セルフトーク：',daily_log['discharge_talk'])
+    st.write('充電ログ：',daily_log['charge_log'])
+    st.write('充電セルフトーク：',daily_log['charge_talk'])
 
     def save_daily_log():
         insert_daily_log(st.session_state.daily_log)
@@ -363,11 +363,11 @@ def weekly_confirm_page():
 
     weekly_log = st.session_state.weekly_log
 
-    st.write(weekly_log['date'])
-    st.write(weekly_log['start_date'])
-    st.write(weekly_log['end_date'])
-    st.write(weekly_log['discharge_notice'])    
-    st.write(weekly_log['charge_notice'])
+    st.write('作成日：',weekly_log['date'])
+    st.write('抽出開始日：',weekly_log['start_date'])
+    st.write('抽出終了日：',weekly_log['end_date'])
+    st.write('放電の気づき：',weekly_log['discharge_notice'])    
+    st.write('充電の気づき：',weekly_log['charge_notice'])
 
     def save_weekly_log():
         insert_weekly_log(st.session_state.weekly_log)
@@ -472,11 +472,11 @@ def daily_delete_confirm_page():
 
     daily_log = st.session_state.delete_target_log
 
-    st.write(daily_log['date'])
-    st.write(daily_log['discharge_log'])
-    st.write(daily_log['discharge_talk'])
-    st.write(daily_log['charge_log'])
-    st.write(daily_log['charge_talk'])
+    st.write('作成日：',daily_log['date'])
+    st.write('放電ログ：',daily_log['discharge_log'])
+    st.write('放電セルフトーク：',daily_log['discharge_talk'])
+    st.write('充電ログ：',daily_log['charge_log'])
+    st.write('充電セルフトーク：',daily_log['charge_talk'])
 
     def confirm_delete():
         delete_daily_log(daily_log['id'])
@@ -549,11 +549,11 @@ def weekly_delete_confirm_page():
 
     weekly_log = st.session_state.delete_target_log
 
-    st.write(weekly_log['date'])
-    st.write(weekly_log['start_date'])
-    st.write(weekly_log['end_date'])
-    st.write(weekly_log['discharge_notice'])    
-    st.write(weekly_log['charge_notice'])
+    st.write('作成日：',weekly_log['date'])
+    st.write('抽出開始日：',weekly_log['start_date'])
+    st.write('抽出終了日：',weekly_log['end_date'])
+    st.write('放電の気づき：',weekly_log['discharge_notice'])    
+    st.write('充電の気づき：',weekly_log['charge_notice'])
 
     def confirm_delete():
         delete_weekly_log(weekly_log['id'])
