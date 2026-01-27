@@ -126,14 +126,17 @@ writing_meditation/
 ### TOPページ
 日次ログ・週次ログの作成や、過去ログの確認を行う起点となる画面です。
 
+<p align="center">
 <img src="images/01_top.png" alt="TOPページ" width="600">
-
+</p>
 ---
 
 ### 日次ログの作成
 放電ログ・充電ログを記録し、その内容を元に各セルフトークを記録します。
 
+<p align="center">
 <img src="images/02_daily.png" alt="日次ログの作成" width="600">
+</p>
 
 ---
 
@@ -141,14 +144,18 @@ writing_meditation/
 対象期間を選択すると、該当する日次ログが一覧表示されます。  
 抽出された期間のログを参考に、各気づきを記録します。
 
+<p align="center">
 <img src="images/03_weekly_extract.gif" alt="週次ログの抽出" width="650">
+</p>
 
 ---
 
 ### 週次ログの確認
 作成済みの週次ログを一覧で確認できます。
 
+<p align="center">
 <img src="images/04_weekly_list.png" alt="週次ログの確認" width="600">
+</p>
 
 ---
 
