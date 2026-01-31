@@ -92,7 +92,8 @@ writing_meditation/
 │   ├── 03_weekly_extract.gif 
 │   └── 04_weekly_list.png    
 ├── venv/                     # Python 仮想環境
-├── insert_dummy_daily.py     # ダミーデータ投入用スクリプト
+├── insert_dummy_daily.py     # ダミーデータ（日次ログ）投入用スクリプト
+├── insert_dummy_weekly.py    # ダミーデータ（週次ログ）投入用スクリプト
 ├── main.py                   # アプリ本体
 ├── requirements.txt
 └── README.md
@@ -183,8 +184,7 @@ streamlit run main.py
 ```
 
 ※ 本手順は macOS / Windows のいずれでも基本的に同様です。
-※ Python / pip の実行環境によっては、`pip` の代わりに
-  `pip3` または `python -m pip` を使用してください。
+※ Python / pip の実行環境によっては、`pip` の代わりに`pip3` または `python -m pip` を使用してください。
 
 ---
 
@@ -199,7 +199,7 @@ streamlit run main.py
 
 ## 今後の機能拡張について（検討課題）
 
-* 月次・年次単位での振り返り機能の追加
+* 月次、年次単位での振り返り機能の追加
 * UI/UXの改善（現在の簡素なデザインから、より使いやすくデザイン性の高い画面へ）
 * 頻出ワードの抽出機能の追加（データログからどんな出来事や感情が多いかを分析）
 * 日ごとの感情スコア（1〜5段階）を追加し、曜日別・月初／月中／月末の傾向分析を可能にする機能
