@@ -184,8 +184,7 @@ streamlit run main.py
 ```
 
 ※ 本手順は macOS / Windows のいずれでも基本的に同様です。
-※ Python / pip の実行環境によっては、`pip` の代わりに
-  `pip3` または `python -m pip` を使用してください。
+※ Python / pip の実行環境によっては、`pip` の代わりに`pip3` または `python -m pip` を使用してください。
 
 ---
 
