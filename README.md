@@ -3,8 +3,9 @@
 🔗 **WebアプリURL**
 [https://writing-meditation.streamlit.app](https://writing-meditation.streamlit.app)
 
-本アプリの構成・機能は以下の目次から確認できます。
+
 ## 目次
+本アプリの構成・機能は以下の目次から確認できます。
 - [アプリ概要](#アプリ概要)
 - [開発環境](#開発環境)
 - [使用技術](#使用技術)
