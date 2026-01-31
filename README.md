@@ -92,7 +92,8 @@ writing_meditation/
 │   ├── 03_weekly_extract.gif 
 │   └── 04_weekly_list.png    
 ├── venv/                     # Python 仮想環境
-├── insert_dummy_daily.py     # ダミーデータ投入用スクリプト
+├── insert_dummy_daily.py     # ダミーデータ（日次ログ）投入用スクリプト
+├── insert_dummy_weekly.py    # ダミーデータ（週次ログ）投入用スクリプト
 ├── main.py                   # アプリ本体
 ├── requirements.txt
 └── README.md
