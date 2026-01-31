@@ -1,3 +1,6 @@
+![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+![Streamlit](https://img.shields.io/badge/streamlit-%E2%89%A53.0-orange)
+
 # 書く瞑想　〜Writing Meditation〜
 
 🔗 **WebアプリURL**
