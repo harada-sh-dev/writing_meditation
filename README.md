@@ -86,6 +86,8 @@
 writing_meditation/
 ├── data/
 │   └── app.db                # SQLite データベースファイル
+├── docs/
+│   └── journal_app_spec.xlsx # 仕様書
 ├── images/                   # README用キャプチャ画像
 │   ├── 01_top.png            
 │   ├── 02_daily.png          
