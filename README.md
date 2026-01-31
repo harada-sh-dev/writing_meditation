@@ -152,6 +152,7 @@ writing_meditation/
 <img src="images/01_top.png" alt="TOPページ" width="600">
 </p>
 
+
 ### 日次ログの作成
 放電ログ・充電ログを記録し、その内容を元に各セルフトークを記録します。
 
@@ -159,7 +160,7 @@ writing_meditation/
 <img src="images/02_daily.png" alt="日次ログの作成" width="600">
 </p>
 
----
+
 
 ### 週次ログの作成（期間抽出）
 対象期間を選択すると、該当する日次ログが一覧表示されます。  
@@ -169,7 +170,7 @@ writing_meditation/
 <img src="images/03_weekly_extract.gif" alt="週次ログの抽出" width="650">
 </p>
 
----
+
 
 ### 週次ログの確認
 作成済みの週次ログを一覧で確認できます。
