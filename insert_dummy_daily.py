@@ -232,4 +232,5 @@ cur.executemany("""
 conn.commit()
 conn.close()
 
+
 print("ダミーデータを daily_log に登録しました")

@@ -114,4 +114,5 @@ cur.executemany("""
 conn.commit()
 conn.close()
 
+
 print("ダミーデータを weekly_log に登録しました")
